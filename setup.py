@@ -10,13 +10,9 @@ setup(
     description=("Twyla Raml Verifier"),
     install_requires=dependencies,
     extras_require={
-        'test': ['pytest'],
+        'test': ['pytest', 'pylint'],
     },
     packages=["twyla.raml"],
-    entry_points={
-        'console_scripts': [
-            'twyla-raml = twyla.raml.main:load',
-        ]
-    },
+    entry_points={},
     url="https://bitbucket.org/twyla/twyla.raml",
 )
