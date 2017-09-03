@@ -9,7 +9,7 @@ version: v1
 
 /status:
   get:
-    description: returns the email and tenant of currently logged in user
+    description: Returns the email and tenant of currently logged in user
     responses:
       200:
         body:
@@ -41,3 +41,9 @@ def test_endpoint_attributes():
     endpoint = spec.endpoints['/status']
     assert len(endpoint.methods) == 1
     assert 'get' in endpoint.methods
+
+def test_method_attributes():
+    spec = RamlSpecification(BASIC_RAML)
+    method = spec.endpoints['/status'].methods['get']
+    assert method.name == 'get'
+    assert method.description == "Returns the email and tenant of currently logged in user"

@@ -19,9 +19,10 @@ METHODS = ['get', 'post', 'put', 'delete']
 
 class Method:
 
-    def __init__(self, method, section):
-        self.method = method
+    def __init__(self, name, section):
+        self.name = name
         self.section = section
+        self.description = section.get('description', '')
 
 class Endpoint:
 
