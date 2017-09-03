@@ -6,6 +6,7 @@ BASIC_RAML = """
 title: Awesome API
 baseUri: http://api.awesome.com/{version}
 version: v1
+
 /status:
   get:
     description: returns the email and tenant of currently logged in user
@@ -28,3 +29,15 @@ def test_load_raml():
 def test_raml_version():
     spec = RamlSpecification(BASIC_RAML)
     assert spec.version == ('RAML', '1.0')
+
+
+def test_endpoint_available():
+    spec = RamlSpecification(BASIC_RAML)
+    assert len(spec.endpoints) == 1
+    assert '/status' in spec.endpoints
+
+def test_endpoint_attributes():
+    spec = RamlSpecification(BASIC_RAML)
+    endpoint = spec.endpoints['/status']
+    assert len(endpoint.methods) == 1
+    assert 'get' in endpoint.methods

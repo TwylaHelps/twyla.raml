@@ -15,9 +15,37 @@ def parse_version(body):
         return ('RAML', parse_result['version'])
     return None
 
+METHODS = ['get', 'post', 'put', 'delete']
+
+class Method:
+
+    def __init__(self, method, section):
+        self.method = method
+        self.section = section
+
+class Endpoint:
+
+    def __init__(self, path, section):
+        self.path = path
+        self.section = section
+        self.methods = {}
+        self.load_methods()
+
+    def load_methods(self):
+        for key, section in self.section.items():
+            if key in METHODS:
+                self.methods[key] = Method(key, section)
+
 
 class RamlSpecification:
 
     def __init__(self, body):
         self.version = parse_version(body) or DEFAULT_VERSION
         self.document = yaml.load(body)
+        self.endpoints = {}
+        self.load_endpoints()
+
+    def load_endpoints(self):
+        for key, section in self.document.items():
+            if key.startswith('/'):
+                self.endpoints[key] = Endpoint(key, section)
