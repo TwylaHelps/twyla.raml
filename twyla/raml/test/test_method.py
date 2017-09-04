@@ -15,3 +15,5 @@ def test_no_description():
 def test_request_body():
     method = Method('get', {'body': {'application/json': {'type': 'object'}}},
                     APIProperties({'title': 'Test'}))
+    assert len(method.body_by_media_type) == 1
+    assert 'application/json' in method.body_by_media_type

@@ -1,5 +1,8 @@
-* IN-PROGRES Add body by media type to Method
+* DONE Add body by media type to Method
+  CLOSED: [2017-09-04 Mon 22:08]
 
 * TODO Add response by status code to Method
+
+* TODO Turn data types into metaprogramming
 
 * TODO Add protocols field. Must be fetched from baseUri if not given

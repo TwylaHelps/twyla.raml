@@ -4,6 +4,8 @@ import yaml
 import mimeparse
 from parse import parse
 
+from twyla.raml.data_types import DataType
+
 VERSION_PATTERN = '#%RAML {version}'
 DEFAULT_VERSION = ('RAML', '1.0')
 
@@ -27,11 +29,6 @@ def parse_media_type(media_type_string: str):
 
 METHODS = ['get', 'patch', 'post', 'put', 'delete', 'options', 'head']
 
-
-class DataType:
-
-    def __init__(self, data_spec):
-        self.data_spec = data_spec
 
 
 class APIProperties:
@@ -71,14 +68,14 @@ class Method:
         self.name = name
         self.section = section
         self.description = section.get('description', '')
+        self.body_by_media_type = {}
         self.parse_body(section.get('body', {}))
 
 
     def parse_body(self, body_section):
-        self.body_by_media_type = {}
         if all(parse_media_type(key) for key in body_section.keys()):
             for media_type, section in body_section.items():
-                self.body_by_media_type[media_type] = DataType(section)
+                self.body_by_media_type[media_type] = DataType.from_spec(section)
         else:
             data_type = DataType(body_section)
             for media_type in properties.media_types:
