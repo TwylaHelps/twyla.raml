@@ -48,43 +48,49 @@ class Endpoint:
                 self.methods[key] = Method(key, section)
 
 
-class RamlSpecification:
+class APIProperties:
 
-    def __init__(self, body):
-        self.version = parse_version(body) or DEFAULT_VERSION
-        self.document = yaml.load(body)
+    def __init__(self, document):
+        self.document = document
         try:
             self.title = self.document['title']
         except KeyError:
             raise RamlSpecificationError('Please provide a title for your API')
         self.base_uri = self.document.get('baseUri', '')
-        self.endpoints = {}
-        self.load_endpoints()
         self.documentation = {}
         self.load_documentation()
+        self.media_type = []
         self.load_media_type()
-
-    def load_endpoints(self):
-        for key, section in self.document.items():
-            if key.startswith('/'):
-                self.endpoints[key] = Endpoint(key, section)
-
 
     def load_documentation(self):
         for doc_section in self.document.get('documentation', []):
             self.documentation[doc_section['title']] = doc_section['content']
 
     def load_media_type(self):
-        if 'mediaType' in self.document:
-            if isinstance(self.document['mediaType'], list):
-                self.media_type = self.document['mediaType']
-            else:
-                self.media_type = [self.document['mediaType']]
-            for media_type in self.media_type:
-                try:
-                    mimeparse.parse_mime_type(media_type)
-                except ValueError:
-                    raise RamlSpecificationError("{} is not a valid media type".format(
-                        media_type))
+        if 'mediaType' not in self.document:
+            return
+        if isinstance(self.document['mediaType'], list):
+            self.media_type = self.document['mediaType']
         else:
-            self.media_type = []
+            self.media_type = [self.document['mediaType']]
+        for media_type in self.media_type:
+            try:
+                mimeparse.parse_mime_type(media_type)
+            except ValueError:
+                raise RamlSpecificationError("{} is not a valid media type".format(
+                    media_type))
+
+
+class RamlSpecification:
+
+    def __init__(self, body):
+        self.version = parse_version(body) or DEFAULT_VERSION
+        self.document = yaml.load(body)
+        self.properties = APIProperties(self.document)
+        self.endpoints = {}
+        self.load_endpoints()
+
+    def load_endpoints(self):
+        for key, section in self.document.items():
+            if key.startswith('/'):
+                self.endpoints[key] = Endpoint(key, section)

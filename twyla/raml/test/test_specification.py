@@ -10,53 +10,21 @@ def raml_file_content():
         content = raml_file.read()
     return content
 
-def test_title_required():
-    """Title is the only thing required. Make sure it's there"""
-    with pytest.raises(RamlSpecificationError) as exception_info:
-        RamlSpecification('baseUri: http://blah.com')
-    message = exception_info.value.args[0]
-    assert message == 'Please provide a title for your API'
-
-
-def test_media_type(raml_file_content):
-    spec = RamlSpecification(raml_file_content)
-    assert spec.media_type == ['application/json']
-
-def test_no_media_type():
-    spec = RamlSpecification("title: Blah")
-    assert spec.media_type == []
-
-def test_invalid_media_type():
-    with pytest.raises(RamlSpecificationError) as exception_info:
-        spec = RamlSpecification("""title: Blah
-mediaType: blah""")
-    message = exception_info.value.args[0]
-    assert message == 'blah is not a valid media type'
-
-
 def test_load_raml(raml_file_content):
     spec = RamlSpecification(raml_file_content)
     assert spec.document['title'] == 'Awesome API'
-
 
 def test_raml_version(raml_file_content):
     spec = RamlSpecification(raml_file_content)
     assert spec.version == ('RAML', '1.0')
 
 
-def test_base_uri(raml_file_content):
-    spec = RamlSpecification(raml_file_content)
-    assert spec.base_uri == 'http://api.awesome.com/v1'
-
-def test_no_base_uri(raml_file_content):
-    spec = RamlSpecification("title: Blah")
-    assert spec.base_uri == ''
-
-
 def test_documentation(raml_file_content):
+    """This test also makes sure APIProps has been loaded"""
     spec = RamlSpecification(raml_file_content)
-    assert len(spec.documentation) == 1
-    assert spec.documentation['Home'].startswith(
+    props = spec.properties
+    assert len(props.documentation) == 1
+    assert props.documentation['Home'].startswith(
         'Welcome to the Awesome API documentation')
 
 
