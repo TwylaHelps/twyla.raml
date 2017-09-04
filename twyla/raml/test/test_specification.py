@@ -18,17 +18,40 @@ def test_title_required():
     assert message == 'Please provide a title for your API'
 
 
+def test_media_type(raml_file_content):
+    spec = RamlSpecification(raml_file_content)
+    assert spec.media_type == ['application/json']
+
+def test_no_media_type():
+    spec = RamlSpecification("title: Blah")
+    assert spec.media_type == []
+
+def test_invalid_media_type():
+    with pytest.raises(RamlSpecificationError) as exception_info:
+        spec = RamlSpecification("""title: Blah
+mediaType: blah""")
+    message = exception_info.value.args[0]
+    assert message == 'blah is not a valid media type'
+
+
 def test_load_raml(raml_file_content):
     spec = RamlSpecification(raml_file_content)
     assert spec.document['title'] == 'Awesome API'
+
 
 def test_raml_version(raml_file_content):
     spec = RamlSpecification(raml_file_content)
     assert spec.version == ('RAML', '1.0')
 
+
 def test_base_uri(raml_file_content):
     spec = RamlSpecification(raml_file_content)
     assert spec.base_uri == 'http://api.awesome.com/v1'
+
+def test_no_base_uri(raml_file_content):
+    spec = RamlSpecification("title: Blah")
+    assert spec.base_uri == ''
+
 
 def test_documentation(raml_file_content):
     spec = RamlSpecification(raml_file_content)

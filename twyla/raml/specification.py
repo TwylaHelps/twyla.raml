@@ -1,6 +1,7 @@
 from itertools import takewhile
 
 import yaml
+import mimeparse
 from parse import parse
 
 VERSION_PATTERN = '#%RAML {version}'
@@ -26,6 +27,10 @@ class Method:
         self.name = name
         self.section = section
         self.description = section.get('description', '')
+        self.body = self.parse_body(section.get('body', {}))
+
+    def parse_body(self, body_section):
+        pass
 
 
 class Endpoint:
@@ -52,11 +57,12 @@ class RamlSpecification:
             self.title = self.document['title']
         except KeyError:
             raise RamlSpecificationError('Please provide a title for your API')
-        self.base_uri = self.document['baseUri']
+        self.base_uri = self.document.get('baseUri', '')
         self.endpoints = {}
         self.load_endpoints()
         self.documentation = {}
         self.load_documentation()
+        self.load_media_type()
 
     def load_endpoints(self):
         for key, section in self.document.items():
@@ -67,3 +73,18 @@ class RamlSpecification:
     def load_documentation(self):
         for doc_section in self.document.get('documentation', []):
             self.documentation[doc_section['title']] = doc_section['content']
+
+    def load_media_type(self):
+        if 'mediaType' in self.document:
+            if isinstance(self.document['mediaType'], list):
+                self.media_type = self.document['mediaType']
+            else:
+                self.media_type = [self.document['mediaType']]
+            for media_type in self.media_type:
+                try:
+                    mimeparse.parse_mime_type(media_type)
+                except ValueError:
+                    raise RamlSpecificationError("{} is not a valid media type".format(
+                        media_type))
+        else:
+            self.media_type = []

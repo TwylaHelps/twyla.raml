@@ -1,6 +1,6 @@
 from setuptools import setup
 
-dependencies = ['PyYAML>3', 'parse']
+dependencies = ['PyYAML>3', 'parse', 'mimeparse']
 
 setup(
     name="twyla-raml",
