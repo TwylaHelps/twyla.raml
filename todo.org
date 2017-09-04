@@ -1,1 +1,5 @@
+* IN-PROGRES Add body by media type to Method
+
+* TODO Add response by status code to Method
+
 * TODO Add protocols field. Must be fetched from baseUri if not given
