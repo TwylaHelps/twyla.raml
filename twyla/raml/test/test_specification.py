@@ -1,7 +1,7 @@
 import pkg_resources
 import pytest
 
-from twyla.raml import RamlSpecification
+from twyla.raml import RamlSpecification, RamlSpecificationError
 
 @pytest.fixture
 def raml_file_content():
@@ -9,6 +9,14 @@ def raml_file_content():
     with open(path, 'r') as raml_file:
         content = raml_file.read()
     return content
+
+def test_title_required():
+    """Title is the only thing required. Make sure it's there"""
+    with pytest.raises(RamlSpecificationError) as exception_info:
+        RamlSpecification('baseUri: http://blah.com')
+    message = exception_info.value.args[0]
+    assert message == 'Please provide a title for your API'
+
 
 def test_load_raml(raml_file_content):
     spec = RamlSpecification(raml_file_content)
@@ -27,6 +35,7 @@ def test_documentation(raml_file_content):
     assert len(spec.documentation) == 1
     assert spec.documentation['Home'].startswith(
         'Welcome to the Awesome API documentation')
+
 
 def test_endpoint_available(raml_file_content):
     spec = RamlSpecification(raml_file_content)

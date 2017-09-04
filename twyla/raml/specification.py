@@ -6,6 +6,9 @@ from parse import parse
 VERSION_PATTERN = '#%RAML {version}'
 DEFAULT_VERSION = ('RAML', '1.0')
 
+class RamlSpecificationError(Exception):
+    pass
+
 def parse_version(body):
     comment_lines = takewhile(lambda x: x.startswith('#'), body.split())
     for line in comment_lines:
@@ -45,6 +48,10 @@ class RamlSpecification:
     def __init__(self, body):
         self.version = parse_version(body) or DEFAULT_VERSION
         self.document = yaml.load(body)
+        try:
+            self.title = self.document['title']
+        except KeyError:
+            raise RamlSpecificationError('Please provide a title for your API')
         self.base_uri = self.document['baseUri']
         self.endpoints = {}
         self.load_endpoints()

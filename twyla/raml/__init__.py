@@ -1,1 +1,1 @@
-from .specification import RamlSpecification, Endpoint
+from .specification import RamlSpecification, Endpoint, RamlSpecificationError
