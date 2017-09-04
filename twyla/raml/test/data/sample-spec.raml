@@ -1,0 +1,27 @@
+#%RAML 1.0
+---
+title: Awesome API
+baseUri: http://api.awesome.com/v1
+version: v1
+
+documentation:
+  - title: Home
+    content: |
+      Welcome to the Awesome API documentation. There are no limits to
+      what you can do with the Awesome API. Get comfortable, read up,
+      and be one with the beauty of Restful Web Services.
+
+
+/status:
+  get:
+    description: Returns the email and tenant of currently logged in user
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            properties:
+              email:
+                type: string
+              tenant:
+                type: string

@@ -24,6 +24,7 @@ class Method:
         self.section = section
         self.description = section.get('description', '')
 
+
 class Endpoint:
 
     def __init__(self, path, section):
@@ -43,10 +44,18 @@ class RamlSpecification:
     def __init__(self, body):
         self.version = parse_version(body) or DEFAULT_VERSION
         self.document = yaml.load(body)
+        self.base_uri = self.document['baseUri']
         self.endpoints = {}
         self.load_endpoints()
+        self.documentation = {}
+        self.load_documentation()
 
     def load_endpoints(self):
         for key, section in self.document.items():
             if key.startswith('/'):
                 self.endpoints[key] = Endpoint(key, section)
+
+
+    def load_documentation(self):
+        for doc_section in self.document.get('documentation', []):
+            self.documentation[doc_section['title']] = doc_section['content']
