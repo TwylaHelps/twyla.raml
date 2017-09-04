@@ -15,7 +15,7 @@ def parse_version(body):
         return ('RAML', parse_result['version'])
     return None
 
-METHODS = ['get', 'post', 'put', 'delete']
+METHODS = ['get', 'patch', 'post', 'put', 'delete', 'options', 'head']
 
 class Method:
 
@@ -30,6 +30,7 @@ class Endpoint:
     def __init__(self, path, section):
         self.path = path
         self.section = section
+        self.display_name = section.get('displayName', self.path)
         self.methods = {}
         self.load_methods()
 
