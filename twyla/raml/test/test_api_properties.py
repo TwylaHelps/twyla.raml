@@ -13,12 +13,12 @@ def test_title_required():
 
 def test_media_type():
     props = APIProperties({'title': 'Test', 'mediaType': 'application/json'})
-    assert props.media_type == ['application/json']
+    assert props.media_types == ['application/json']
 
 
 def test_no_media_type():
     props = APIProperties({'title': 'Test'})
-    assert props.media_type == []
+    assert props.media_types == []
 
 
 def test_invalid_media_type():
