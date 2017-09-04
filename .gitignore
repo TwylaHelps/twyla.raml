@@ -35,7 +35,6 @@ pip-log.txt
 npm-debug.log
 pip-selfcheck.json
 
-.abl
 .idea
 .cache
 pip-cache

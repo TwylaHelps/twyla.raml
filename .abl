@@ -1,0 +1,7 @@
+abl-mode-use-file-module 'nil
+abl-mode-test-path-module-class-separator "::"
+abl-mode-test-path-class-method-separator "::"
+abl-mode-test-file-regexp "test_.*.py"
+abl-mode-test-command "pytest -q --disable-warnings --tb=native %s"
+abl-mode-install-command "pip install -e .[test]"
+abl-mode-ve-create-command "mkvirtualenv -p /usr/bin/python3.5 %s"
