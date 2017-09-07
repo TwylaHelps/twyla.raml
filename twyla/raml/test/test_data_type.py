@@ -33,3 +33,22 @@ def test_string_validation():
     validation_errors = StringType({}).validate(0)
     assert len(validation_errors) == 1
     assert validation_errors[0].error_message == 'Value is of type int, string expected'
+
+
+def test_object_validation():
+    spec = {
+        'type': 'object',
+        'properties': {
+            'name': {'type': 'string'},
+            'email': {'type': 'string',
+                      'required': False}
+        }
+    }
+    object_type = DataType.from_spec(spec)
+    errors = object_type.validate({'name': 'Ulas'})
+    assert len(errors) == 0
+
+    errors = object_type.validate({})
+    assert len(errors) == 1
+    assert errors[0].error_message == 'Field is required'
+    assert errors[0].field_name == 'name'

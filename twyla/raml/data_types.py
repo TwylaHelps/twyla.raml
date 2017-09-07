@@ -57,8 +57,9 @@ class ObjectType(DataType):
     def validate(self, data):
         errors = []
         for key, item in self.properties.items():
-            if item.required and key not in data:
-                errors.append(ValidationError(key, 'Field is required'))
+            if key not in data:
+                if item.required:
+                    errors.append(ValidationError(key, 'Field is required'))
                 continue
             item_errors = item.validate(data[key])
             if errors:
