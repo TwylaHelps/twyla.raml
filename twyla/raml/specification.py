@@ -77,10 +77,19 @@ class Method:
             for media_type, section in body_section.items():
                 self.body_by_media_type[media_type] = DataType.from_spec(section)
         else:
+            if len(properties.media_types) != 1:
+                raise RamlSpecificationError(
+                    'No default media types specified, you have to specify one in methods.')
             data_type = DataType(body_section)
             for media_type in properties.media_types:
                 self.body_by_media_type[media_type] = data_type
             # It should be a type declaration
+
+    def validate_body(self, data, media_type=None):
+        if media_type is None:
+            if len(self.body_by_media_type) > 1:
+                raise RamlSpecificationError(
+                    'Validation request does not contain media type, but multiple media types available')
 
 
 
@@ -101,6 +110,10 @@ class Endpoint:
                 self.methods[key] = Method(key, section, self.properties)
 
 
+    def validate_input(self, method, data, media_type=None):
+        self.methods[method].validate(status, data)
+
+
 
 class RamlSpecification:
 
@@ -115,3 +128,8 @@ class RamlSpecification:
         for key, section in self.document.items():
             if key.startswith('/'):
                 self.endpoints[key] = Endpoint(key, section, self.properties)
+
+
+    def validate_input(self, endpoint, method, data, media_type=None):
+        return self.endpoints[endpoint].validate(
+            method, status, data, media_type)

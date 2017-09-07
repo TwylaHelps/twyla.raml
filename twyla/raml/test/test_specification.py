@@ -44,3 +44,13 @@ def test_method_attributes(raml_file_content):
     method = spec.endpoints['/status'].methods['get']
     assert method.name == 'get'
     assert method.description == "Returns the email and tenant of currently logged in user"
+
+def test_error_on_no_media_types():
+    spec_content = """
+title: Test Api
+/status:
+  post:
+    response:
+        type: string
+"""
+    spec = RamlSpecification(spec_content)
