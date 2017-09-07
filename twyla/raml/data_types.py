@@ -6,6 +6,7 @@ def for_type(type_name):
         return cls
     return deco
 
+
 class DataType:
 
     def __init__(self, spec):
@@ -13,12 +14,23 @@ class DataType:
         self.spec = spec
         self.parse_spec()
 
-    def parse_spec(self):
-        raise NotImplementedError()
-
     @classmethod
     def from_spec(cls, spec):
         return TYPES[spec['type']](spec)
+
+    def parse_spec(self):
+        raise NotImplementedError()
+
+
+class ValidationError:
+    def __init__(self, field_name, error_message):
+        self.field_name = field_name
+        self.error_message = error_message
+
+    def __repr__(self):
+        return '<ValidationError field: {} error_message: {}>'.format(
+            self.field_name, self.error_message)
+
 
 
 @for_type('string')
@@ -28,11 +40,27 @@ class StringType(DataType):
         pass
 
     def validate(self, value):
-        return isinstance(value, str)
+        if not isinstance(value, str):
+            return [ValidationError('', 'Value is of type {}, string expected'.format(
+                type(value).__name__))]
 
 
 @for_type('object')
 class ObjectType(DataType):
 
     def parse_spec(self):
-        pass
+        self.properties = {}
+        properties = self.spec.get('properties', [])
+        for key in properties:
+            self.properties[key] = DataType.from_spec(properties[key])
+
+    def validate(self, data):
+        errors = []
+        for key, item in self.properties.items():
+            if item.required and key not in data:
+                errors.append(ValidationError(key, 'Field is required'))
+                continue
+            item_errors = item.validate(data[key])
+            if errors:
+                errors.extend(item_errors)
+        return errors

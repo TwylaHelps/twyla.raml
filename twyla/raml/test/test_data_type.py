@@ -25,3 +25,11 @@ def test_object_tree():
         }
     }
     object_type = DataType.from_spec(spec)
+    assert len(object_type.properties.keys()) == 2
+    assert isinstance(object_type.properties['name'], StringType)
+
+
+def test_string_validation():
+    validation_errors = StringType({}).validate(0)
+    assert len(validation_errors) == 1
+    assert validation_errors[0].error_message == 'Value is of type int, string expected'
