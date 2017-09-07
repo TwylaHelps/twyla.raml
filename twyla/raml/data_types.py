@@ -31,6 +31,11 @@ class ValidationError:
         return '<ValidationError field: {} error_message: {}>'.format(
             self.field_name, self.error_message)
 
+    def update_field_path(self, field_prefix):
+        if not self.field_name:
+            self.field_name = field_prefix
+        else:
+            self.field_name = '.'.join([field_prefix, self.field_name])
 
 
 @for_type('string')
@@ -62,6 +67,8 @@ class ObjectType(DataType):
                     errors.append(ValidationError(key, 'Field is required'))
                 continue
             item_errors = item.validate(data[key])
-            if errors:
+            if item_errors:
+                for error in item_errors:
+                    error.update_field_path(key)
                 errors.extend(item_errors)
         return errors

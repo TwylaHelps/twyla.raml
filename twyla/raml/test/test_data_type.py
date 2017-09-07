@@ -52,3 +52,21 @@ def test_object_validation():
     assert len(errors) == 1
     assert errors[0].error_message == 'Field is required'
     assert errors[0].field_name == 'name'
+
+
+def test_deep_object_errors():
+    spec = {
+        'type': 'object',
+        'properties': {
+            'name': {'type': 'string'},
+            'profile': {
+                'type': 'object',
+                'properties': {
+                    'email': {'type': 'string',
+                              'required': False}
+                }}}}
+    object_type = DataType.from_spec(spec)
+    errors = object_type.validate({'name': 'Ulas', 'profile': {'email': 10}})
+    assert len(errors) == 1
+    assert errors[0].error_message == 'Value is of type int, string expected'
+    assert errors[0].field_name == 'profile.email'
